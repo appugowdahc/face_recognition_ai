@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Face Detection Application</title>
+    <link rel="stylesheet" href="/static/css/style.css" />
+  </head>
+  <body>
+    <!-- HEADER SECTION -->
+    <header class="header">
+      <h1>🧠 Face Detection Application</h1>
+      <p>Upload or capture a photo to detect faces</p>
+    </header>
+  <div class="container">
+    <h1>📸 Capture or Upload a Photo</h1>
+
+    <!-- Upload Section -->
+    <input type="file" id="fileInput" accept="image/*" />
+    <button class="button" onclick="uploadFile()">Upload Image</button>
+
+    <!-- Webcam Section -->
+    <div style="margin-top:2rem;">
+      <video id="video" width="100%" autoplay></video><br>
+      <button class="button" id="snap">Capture from Webcam</button>
+      <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
+    </div>
+
+    <img id="preview" src="" alt="Preview" />
+
+  </div>
+
+  <script src="/static/js/capture.js"></script>
+</body>
+</html>
