@@ -2,34 +2,220 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Face Detection Application</title>
-    <link rel="stylesheet" href="/static/css/style.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Face Recognition App</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
+    "
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f0f2f5;
+      }
+
+      header {
+        background: linear-gradient(to right, #6a11cb, #2575fc);
+        color: white;
+        padding: 30px;
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: bold;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      nav {
+        display: flex;
+        background-color: #ffffff;
+        justify-content: center;
+        padding: 1rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      nav a {
+        color: #333;
+        margin: 0 1.5rem;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 1.1rem;
+        padding: 8px 16px;
+        border-radius: 5px;
+        transition: background 0.3s, color 0.3s;
+      }
+
+      nav a:hover {
+        background-color: #2575fc;
+        color: white;
+      }
+
+      .section {
+        display: none;
+        padding: 2rem;
+        max-width: 800px;
+        margin: auto;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        margin-top: 30px;
+      }
+
+      .section.active {
+        display: block;
+      }
+
+      .upload-area {
+        border: 2px dashed #2575fc;
+        padding: 40px;
+        text-align: center;
+        background-color: #f9f9f9;
+        border-radius: 12px;
+        cursor: pointer;
+        margin: 20px 0;
+        font-size: 1.2rem;
+        color: #666;
+      }
+
+      .progress-bar {
+        background-color: #eee;
+        border-radius: 20px;
+        overflow: hidden;
+        margin-top: 20px;
+      }
+
+      .progress-bar-fill {
+        height: 20px;
+        width: 0;
+        background-color: #2575fc;
+        color: white;
+        text-align: center;
+        transition: width 0.3s;
+      }
+
+      button {
+        background-color: #2575fc;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 1rem;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        margin-top: 15px;
+      }
+
+      button:hover {
+        background-color: #1b5bd1;
+      }
+
+      input[type="file"],
+      input[type="text"] {
+        padding: 10px;
+        font-size: 1rem;
+        margin-top: 10px;
+        width: 100%;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+
+      label {
+        display: block;
+        margin-top: 20px;
+        font-weight: bold;
+      }
+    </style>
   </head>
+
   <body>
-    <!-- HEADER SECTION -->
-    <header class="header">
-      <h1>🧠 Face Detection Application</h1>
-      <p>Upload or capture a photo to detect faces</p>
-    </header>
-  <div class="container">
-    <h1>📸 Capture or Upload a Photo</h1>
+    <header>Face Recognition System</header>
+    <nav>
+      <a href="#" onclick="showSection('upload')">Upload Image</a>
+      <a href="#" onclick="showSection('capture')">Capture Image</a>
+      <a href="#" onclick="showSection('train')">Train Model</a>
+    </nav>
 
-    <!-- Upload Section -->
-    <input type="file" id="fileInput" accept="image/*" />
-    <button class="button" onclick="uploadFile()">Upload Image</button>
-
-    <!-- Webcam Section -->
-    <div style="margin-top:2rem;">
-      <video id="video" width="100%" autoplay></video><br>
-      <button class="button" id="snap">Capture from Webcam</button>
-      <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
+    <div id="upload" class="section active">
+      <h2 style="position: relative; left: 40%">Upload an Image</h2>
+      <div class="upload-area" id="uploadBox">
+        Drag & Drop Image Here or Click to Select
+      </div>
+      <input type="file" id="uploadFile" style="display: none" />
+      <button
+        class="upload-button"
+        onclick="uploadImage()"
+        style="position: relative; left: 40%"
+      >
+        Detact the Face
+      </button>
+      <div
+        id="uploadResult"
+        style="position: relative; left: 40%; margin-top: 2%"
+      ></div>
     </div>
 
-    <img id="preview" src="" alt="Preview" />
+    <div id="capture" class="section">
+      <h2 style="position: relative; left: 32%">Capture from Webcam</h2>
+      <video
+        id="webcam"
+        autoplay
+        playsinline
+        width="100%"
+        style="max-width: 780px"
+      ></video
+      ><br />
+      <button
+        onclick="captureFromCamera()"
+        style="position: relative; left: 40%"
+      >
+        Capture And Detect
+      </button>
+      <canvas id="canvas" style="display: none"></canvas>
+      <div
+        id="captureResult"
+        style="position: relative; left: 37%; margin-top: 2%"
+      ></div>
+    </div>
 
-  </div>
+    <div id="train" class="section">
+      <h2>Train Model</h2>
+      <label>Label Name:</label>
+      <input type="text" id="labelName" />
+      <label>Upload Image Folder:</label>
+      <input
+        type="file"
+        id="datasetFolder"
+        webkitdirectory
+        directory
+        multiple
+      />
+      <p style="font-size: 0.9rem; color: #555; margin-top: 4px">
+        📁 Please select a <strong>folder</strong> that contains all the face
+        images for the label.
+      </p>
+      <button onclick="uploadDatasetAndTrain()">Upload & Train</button>
+      <div class="progress-bar">
+        <div class="progress-bar-fill" id="progressFill">0%</div>
+      </div>
+      <div
+        id="trainResult"
+        style="
+          background: #000;
+          color: #0f0;
+          font-family: monospace;
+          padding: 10px;
+          height: 300px;
+          overflow-y: scroll;
+          margin-top: 20px;
+          border-radius: 5px;
+          white-space: pre-wrap;
+          font-size: 0.95rem;
+        "
+      ></div>
+    </div>
 
-  <script src="/static/js/capture.js"></script>
-</body>
+    <script src="/static/js/script.js"></script>
+  </body>
 </html>

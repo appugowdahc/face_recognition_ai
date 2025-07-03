@@ -29,7 +29,7 @@ def preprocess_image(image_path):
 
     # Save images
     for key, img in variations.items():
-        output_path = f"{image_dir}/{name}_{key}{ext}"
+        output_path = f"{image_dir}/{name}_{key}_aug{ext}"
         # import pdb; pdb.set_trace()  # Debugging line to inspect variables
         tf.keras.preprocessing.image.save_img(output_path, img)
         print(f"Saved: {output_path}")
